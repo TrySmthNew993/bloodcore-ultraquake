@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BLOODCORE // ULTRAQUAKE — Kinetic Retro-Cyber FPS</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Fullscreen 3D WebGL Viewport -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- CRT Scanline & Screen Flash Overlays -->
+  <div id="crt-overlay" class="crt-scanlines"></div>
+  <div id="screen-flash" class="screen-flash"></div>
+
+  <!-- ==================== CRT CYBER-TERMINAL MAIN MENU ==================== -->
+  <div id="main-menu" class="menu-overlay">
+    <header class="terminal-topbar">
+      <div class="brand-lockup">
+        <div class="blood-emblem">V//0</div>
+        <div>
+          <div class="brand-kicker">MANKIND IS DEAD // BLOOD IS FUEL // HELL IS FULL</div>
+          <h1 class="brand-title">BLOODCORE <span class="accent">// ULTRAQUAKE</span></h1>
+        </div>
+      </div>
+
+      <nav class="terminal-tabs">
+        <button class="tab-btn active" data-tab="tab-campaign">01 // 5 PRE-MADE LEVELS</button>
+        <button class="tab-btn" data-tab="tab-endless">02 // ENDLESS GAUNTLET</button>
+        <button class="tab-btn" data-tab="tab-codex">03 // ARSENAL &amp; BOTS</button>
+        <button class="tab-btn" data-tab="tab-settings">04 // SETTINGS &amp; KEYS</button>
+      </nav>
+    </header>
+
+    <main class="terminal-body">
+      <!-- TAB 1: 5 PRE-MADE CAMPAIGN LEVELS -->
+      <section id="tab-campaign" class="tab-panel active">
+        <div class="panel-header-row">
+          <div>
+            <div class="section-kicker">PRELUDE ACT // THE DESCENT</div>
+            <h2 class="section-heading">SELECT CAMPAIGN GAUNTLET</h2>
+          </div>
+          <button id="btn-launch-campaign" class="btn-primary-launch">
+            <span>DEPLOY INTO LAYER</span>
+            <span class="arrow">▶</span>
+          </button>
+        </div>
+
+        <div id="campaign-level-grid" class="level-grid"></div>
+
+        <div class="quick-tips-strip">
+          <span><strong>[SHIFT]</strong> 3-Bar Stamina Dash</span>
+          <span><strong>[CTRL / C]</strong> Ground Slide &amp; Air Slam</span>
+          <span><strong>[SPACE]</strong> Bunny-Hop, Wall-Jump (x3) &amp; Slam-Jump</span>
+          <span><strong>[F]</strong> Feedbacker Parry (+50 HP &amp; Hitstop)</span>
+          <span><strong>[RMB]</strong> Coin Toss / Core Eject / Overheat / Railcannon</span>
+        </div>
+      </section>
+
+      <!-- TAB 2: ENDLESS GENERATIVE GAUNTLET ("KEEP GOING" MODE) -->
+      <section id="tab-endless" class="tab-panel">
+        <div class="endless-hero-card">
+          <div class="endless-hero-left">
+            <div class="section-kicker">PROCEDURAL FORWARD GAUNTLET // INFINITE SECTORS</div>
+            <h2 class="endless-title">THE CYBER-DESCENT <span class="accent">// KEEP GOING</span></h2>
+            <p class="endless-desc">
+              Non-stop forward procedural generation. Every time you slaughter a combat chamber, the far Blast Door unlocks into a newly generated arena with shifting vertical architecture, jump pads, crushers, lava/acid hazards, dynamic lighting themes, and escalating bot waves. Every 5th sector pits you against <strong>ARCHON V-0</strong>.
+            </p>
+
+            <div class="endless-stats-row">
+              <div class="stat-tile">
+                <span>FURTHEST SECTOR</span>
+                <strong id="endless-best-room">SECTOR 0</strong>
+              </div>
+              <div class="stat-tile">
+                <span>BEST KILL COUNT</span>
+                <strong id="endless-best-kills">0</strong>
+              </div>
+              <div class="stat-tile">
+                <span>HIGHEST STYLE</span>
+                <strong id="endless-best-style">0</strong>
+              </div>
+            </div>
+
+            <button id="btn-launch-endless" class="btn-primary-launch endless-btn">
+              <span>ENTER ENDLESS GENERATIVE MODE</span>
+              <span class="arrow">▶▶</span>
+            </button>
+          </div>
+
+          <div class="endless-hero-right">
+            <div class="combo-guide-box">
+              <div class="section-kicker">SIGNATURE COMBO TECH</div>
+              <ul class="combo-list">
+                <li><strong>+RICOSHOT:</strong> Toss a Coin (Revolver <code>RMB</code>) and shoot it mid-air for an auto-targeted weakpoint crit.</li>
+                <li><strong>+CORE NUKE:</strong> Lob a Shotgun Core (Shotgun <code>RMB</code>) and shoot it mid-air with the Revolver or Railcannon.</li>
+                <li><strong>+PROJECTILE BOOST:</strong> Press <code>F</code> (Punch) at the exact instant you fire the Shotgun (<code>LMB</code>).</li>
+                <li><strong>+PARRY:</strong> Press <code>F</code> right as an enemy orb or lunge reaches you to reflect it and heal +50 HP.</li>
+                <li><strong>+HOMERUN:</strong> Punch a dying Seeker Drone with <code>F</code> to launch it like a missile into another bot.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: ARSENAL & BOT CODEX -->
+      <section id="tab-codex" class="tab-panel">
+        <div class="codex-columns">
+          <div>
+            <div class="section-kicker">INFINITE AMMO // COOLDOWN &amp; COMBO TECH</div>
+            <h3 class="sub-heading">WEAPON ARSENAL (SLOTS 1–4)</h3>
+            <div id="codex-weapons-grid" class="codex-list"></div>
+          </div>
+          <div>
+            <div class="section-kicker">CYBER-DEMONIC THREAT MATRIX</div>
+            <h3 class="sub-heading">HOSTILE BOT ARCHETYPES</h3>
+            <div id="codex-enemies-grid" class="codex-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: SETTINGS & CONTROLS -->
+      <section id="tab-settings" class="tab-panel">
+        <div class="settings-columns">
+          <div class="settings-card">
+            <div class="section-kicker">SYSTEM CONFIGURATION</div>
+            <h3 class="sub-heading">GRAPHICS, AUDIO &amp; MOUSE</h3>
+
+            <div class="setting-row">
+              <label for="opt-sens">MOUSE SENSITIVITY <span id="val-sens">2.2</span></label>
+              <input id="opt-sens" type="range" min="0.5" max="6.0" step="0.1" value="2.2" />
+            </div>
+
+            <div class="setting-row">
+              <label for="opt-fov">FIELD OF VIEW (FOV) <span id="val-fov">98°</span></label>
+              <input id="opt-fov" type="range" min="80" max="115" step="1" value="98" />
+            </div>
+
+            <div class="setting-row">
+              <label for="opt-sfx">WEAPON &amp; COMBAT SFX <span id="val-sfx">75%</span></label>
+              <input id="opt-sfx" type="range" min="0" max="1" step="0.05" value="0.75" />
+            </div>
+
+            <div class="setting-row">
+              <label for="opt-music">168 BPM BREAKCORE MUSIC <span id="val-music">48%</span></label>
+              <input id="opt-music" type="range" min="0" max="1" step="0.05" value="0.48" />
+            </div>
+
+            <div class="setting-toggle-row">
+              <label><input id="opt-ps1" type="checkbox" checked /> PS1/PS2 Bayer Dithering &amp; CRT Scanlines</label>
+            </div>
+            <div class="setting-toggle-row">
+              <label><input id="opt-bloom" type="checkbox" checked /> Dynamic Emissive HDR Bloom Post-Processing</label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="section-kicker">MOVEMENT &amp; COMBAT BINDINGS</div>
+            <h3 class="sub-heading">CONTROLS REFERENCE</h3>
+            <div class="keybind-table">
+              <div><span>MOVE (ALWAYS-RUN)</span><code>W A S D</code></div>
+              <div><span>JUMP / WALL-JUMP / BHOP</span><code>SPACE</code></div>
+              <div><span>STAMINA DASH (I-FRAMES)</span><code>SHIFT</code></div>
+              <div><span>GROUND SLIDE / AIR SLAM</span><code>CTRL or C</code></div>
+              <div><span>PRIMARY FIRE</span><code>LEFT MOUSE</code></div>
+              <div><span>ALT-FIRE (COIN / CORE / RAIL)</span><code>RIGHT MOUSE</code></div>
+              <div><span>FEEDBACKER PUNCH / PARRY</span><code>F</code></div>
+              <div><span>SELECT WEAPON</span><code>1 2 3 4 / WHEEL</code></div>
+              <div><span>QUICK-SWAP WEAPON</span><code>Q</code></div>
+              <div><span>PAUSE TERMINAL</span><code>ESC</code></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== IN-GAME FLOATING CYBER-HUD ==================== -->
+  <div id="hud-overlay" class="hud-overlay hidden">
+    <!-- Top Boss Health Bar -->
+    <div id="hud-boss-bar" class="boss-bar-container hidden">
+      <div id="boss-name-label" class="boss-name">ARCHON V-0 // SUPREME MACHINE</div>
+      <div class="boss-hp-track">
+        <div id="boss-hp-fill" class="boss-hp-fill"></div>
+      </div>
+    </div>
+
+    <!-- Top-Left Mission Telemetry -->
+    <div class="hud-top-left">
+      <div id="hud-sector-label" class="hud-sector">0-1 // ROOM 1/3</div>
+      <div class="hud-metrics-row">
+        <div><span>TIME</span><strong id="hud-timer">00:00.00</strong></div>
+        <div><span>KILLS</span><strong id="hud-kills">0</strong></div>
+      </div>
+    </div>
+
+    <!-- Center Room / Wave Announcement Banner -->
+    <div id="hud-room-banner" class="hud-room-banner">
+      <div id="banner-title" class="banner-title">INTO THE FURNACE</div>
+      <div id="banner-sub" class="banner-sub">WAVE 1</div>
+    </div>
+
+    <!-- Center Dynamic Crosshair -->
+    <div class="hud-crosshair">
+      <div class="ch-dot"></div>
+      <div class="ch-ring"></div>
+      <div class="ch-tick top"></div>
+      <div class="ch-tick bottom"></div>
+      <div class="ch-tick left"></div>
+      <div class="ch-tick right"></div>
+    </div>
+
+    <!-- Right-Side ULTRAKILL Style Meter & Bonus Feed -->
+    <div id="hud-style-box" class="hud-style-box active">
+      <div class="style-header">
+        <span id="style-rank-letter" class="style-letter">D</span>
+        <div class="style-title-col">
+          <span class="style-kicker">STYLE RANK</span>
+          <strong id="style-rank-title" class="style-title">DESTRUCTIVE</strong>
+        </div>
+      </div>
+      <div class="style-bar-track">
+        <div id="style-bar-fill" class="style-bar-fill"></div>
+      </div>
+      <div id="style-feed-list" class="style-feed-list"></div>
+    </div>
+
+    <!-- Bottom-Left Health (Blood is Fuel), 3-Bar Stamina & Speedometer -->
+    <div class="hud-bottom-left">
+      <div class="hp-row">
+        <div class="hp-number-box">
+          <span class="hp-label">BLOOD // HP</span>
+          <strong id="hud-hp-val">100</strong>
+        </div>
+        <div class="hp-bars-stack">
+          <div class="hp-bar-track">
+            <div id="hud-hp-fill" class="hp-bar-fill"></div>
+            <div id="hud-hard-fill" class="hp-hard-fill"></div>
+          </div>
+          <!-- 3 Stamina Dash Bars -->
+          <div class="stamina-row">
+            <div class="stam-seg"><div id="stam-bar-1" class="stam-fill"></div></div>
+            <div class="stam-seg"><div id="stam-bar-2" class="stam-fill"></div></div>
+            <div class="stam-seg"><div id="stam-bar-3" class="stam-fill"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="movement-telemetry-row">
+        <span id="hud-speed-val">16.5 M/S</span>
+        <span id="hud-wj-val">WJ: ▮▮▮</span>
+        <span>[F] PARRY // [SHIFT] DASH</span>
+      </div>
+    </div>
+
+    <!-- Bottom-Right Active Weapon & Alt-Fire Cooldown -->
+    <div class="hud-bottom-right">
+      <div class="weapon-slots-row">
+        <span id="w-pill-1" class="w-pill active">[1] REV</span>
+        <span id="w-pill-2" class="w-pill">[2] SGN</span>
+        <span id="w-pill-3" class="w-pill">[3] NLG</span>
+        <span id="w-pill-4" class="w-pill">[4] RAIL</span>
+      </div>
+      <div id="hud-weapon-name" class="hud-weapon-title">MARKSMAN REVOLVER</div>
+      <div class="alt-bar-track">
+        <div id="hud-alt-fill" class="alt-bar-fill"></div>
+      </div>
+      <div id="hud-alt-text" class="hud-alt-status">COINS: ●●●●</div>
+    </div>
+  </div>
+
+  <!-- ==================== PAUSE MODAL ==================== -->
+  <div id="pause-modal" class="modal-backdrop hidden">
+    <div class="terminal-modal">
+      <div class="section-kicker">SYSTEM INTERRUPT</div>
+      <h2 class="modal-title">COMBAT PAUSED</h2>
+      <div class="modal-actions">
+        <button id="btn-resume" class="btn-primary-launch">RESUME COMBAT [ESC]</button>
+        <button id="btn-restart" class="btn-secondary">RESTART SECTOR</button>
+        <button id="btn-quit-menu" class="btn-secondary">ABORT TO TERMINAL MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== P-RANK EVALUATION / GAME OVER MODAL ==================== -->
+  <div id="eval-modal" class="modal-backdrop hidden">
+    <div class="terminal-modal eval-modal-card">
+      <div id="eval-kicker" class="section-kicker">MISSION EVALUATION</div>
+      <h2 id="eval-title" class="modal-title">0-1 // INTO THE FURNACE</h2>
+
+      <div class="eval-body-row">
+        <div class="eval-stats-col">
+          <div class="eval-stat-line"><span>TIME ELAPSED</span><strong id="eval-time">01:12.40</strong></div>
+          <div class="eval-stat-line"><span>HOSTILES SLAIN</span><strong id="eval-kills">24</strong></div>
+          <div class="eval-stat-line"><span>TOTAL STYLE</span><strong id="eval-style">3,420 PTS</strong></div>
+          <div class="eval-stat-line"><span>RESTARTS</span><strong id="eval-restarts">0</strong></div>
+        </div>
+        <div class="eval-rank-col">
+          <span class="rank-caption">FINAL GRADE</span>
+          <div id="eval-rank-badge" class="eval-big-rank rank-p">P</div>
+        </div>
+      </div>
+
+      <div class="modal-actions horizontal">
+        <button id="btn-eval-retry" class="btn-secondary">RETRY</button>
+        <button id="btn-eval-next" class="btn-primary-launch">NEXT LEVEL ▶</button>
+        <button id="btn-eval-menu" class="btn-secondary">MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts loaded in dependency order -->
+  <script src="vendor/three.min.js"></script>
+  <script src="src/data.js"></script>
+  <script src="src/textures.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/models.js"></script>
+  <script src="src/levels.js"></script>
+  <script src="src/physics.js"></script>
+  <script src="src/enemies.js"></script>
+  <script src="src/combat.js"></script>
+  <script src="src/postfx.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
